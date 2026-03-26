@@ -11,6 +11,9 @@ export interface Task {
   status: "captured" | "in-progress" | "completed" | "archived";
   priority?: Priority;
   projectId?: string;
+  createdAt: string;
+  startedAt?: string;
+  completedAt?: string;
   timeInProgress?: number;
   shouldWarn?: boolean;
 }
