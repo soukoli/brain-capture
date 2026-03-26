@@ -9,6 +9,7 @@ export async function GET() {
 
   return NextResponse.json({
     hasPostgresUrl: !!process.env.POSTGRES_URL,
+    hasVercelOidcToken: !!process.env.VERCEL_OIDC_TOKEN,
     pgHost: getEnv('PGHOST'),
     pgUser: getEnv('PGUSER'),
     pgDatabase: getEnv('PGDATABASE'),
@@ -16,11 +17,13 @@ export async function GET() {
     pgSslMode: getEnv('PGSSLMODE'),
     awsRegion: getEnv('AWS_REGION'),
     awsAccountId: getEnv('AWS_ACCOUNT_ID'),
+    awsRoleArn: getEnv('AWS_ROLE_ARN'),
     // Show which variables are using test_ prefix
     usingTestPrefix: {
       pgHost: !process.env.PGHOST && !!process.env.test_PGHOST,
       pgUser: !process.env.PGUSER && !!process.env.test_PGUSER,
       pgDatabase: !process.env.PGDATABASE && !!process.env.test_PGDATABASE,
+      awsRegion: !process.env.AWS_REGION && !!process.env.test_AWS_REGION,
     },
     // Check for whitespace issues
     hasWhitespace: {

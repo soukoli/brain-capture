@@ -6,6 +6,7 @@
 
 import { Pool, PoolConfig } from 'pg';
 import { Signer } from '@aws-sdk/rds-signer';
+import { fromWebToken } from '@aws-sdk/credential-providers';
 
 /**
  * Helper to get environment variable with fallback to test_ prefix
@@ -32,8 +33,24 @@ const hasIamCredentials = !!(pgHost && pgUser && pgDatabase);
 // AWS credentials for IAM authentication
 const awsRegion = getEnv('AWS_REGION');
 const awsRoleArn = getEnv('AWS_ROLE_ARN');
+const vercelOidcToken = process.env.VERCEL_OIDC_TOKEN;
 
 let pool: Pool | null = null;
+
+/**
+ * Get AWS credentials using Vercel OIDC token
+ */
+function getAwsCredentials() {
+  if (!vercelOidcToken || !awsRoleArn) {
+    throw new Error('Missing VERCEL_OIDC_TOKEN or AWS_ROLE_ARN for IAM authentication');
+  }
+
+  return fromWebToken({
+    roleArn: awsRoleArn,
+    webIdentityToken: vercelOidcToken,
+    roleSessionName: 'brain-capture-vercel',
+  });
+}
 
 /**
  * Generate IAM authentication token for RDS
@@ -43,11 +60,14 @@ async function generateIamToken(): Promise<string> {
     throw new Error('Missing required IAM credentials: PGHOST, PGUSER, AWS_REGION');
   }
 
+  const credentials = getAwsCredentials();
+
   const signer = new Signer({
     hostname: pgHost,
     port: parseInt(pgPort || '5432'),
     username: pgUser,
     region: awsRegion,
+    credentials,
   });
 
   const token = await signer.getAuthToken();

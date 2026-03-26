@@ -38,6 +38,8 @@
     "test:install": "playwright install --with-deps"
   },
   "dependencies": {
+    "@aws-sdk/client-sts": "^3.1017.0",
+    "@aws-sdk/credential-providers": "^3.1017.0",
     "@aws-sdk/rds-signer": "^3.1017.0",
     "@radix-ui/react-avatar": "^1.1.2",
     "@radix-ui/react-dialog": "^1.1.3",
