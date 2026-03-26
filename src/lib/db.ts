@@ -4,7 +4,8 @@
  * Supports standard and test_ prefixed environment variables
  */
 
-import { Pool } from 'pg';
+import { Pool, PoolConfig } from 'pg';
+import { Signer } from '@aws-sdk/rds-signer';
 
 /**
  * Helper to get environment variable with fallback to test_ prefix
@@ -29,12 +30,29 @@ const pgSslMode = getEnv('PGSSLMODE');
 const hasIamCredentials = !!(pgHost && pgUser && pgDatabase);
 
 // AWS credentials for IAM authentication
-const awsAccountId = getEnv('AWS_ACCOUNT_ID');
 const awsRegion = getEnv('AWS_REGION');
-const awsResourceArn = getEnv('AWS_RESOURCE_ARN');
 const awsRoleArn = getEnv('AWS_ROLE_ARN');
 
 let pool: Pool | null = null;
+
+/**
+ * Generate IAM authentication token for RDS
+ */
+async function generateIamToken(): Promise<string> {
+  if (!pgHost || !pgUser || !awsRegion) {
+    throw new Error('Missing required IAM credentials: PGHOST, PGUSER, AWS_REGION');
+  }
+
+  const signer = new Signer({
+    hostname: pgHost,
+    port: parseInt(pgPort || '5432'),
+    username: pgUser,
+    region: awsRegion,
+  });
+
+  const token = await signer.getAuthToken();
+  return token;
+}
 
 /**
  * Get or create database connection pool
@@ -48,16 +66,32 @@ export function getPool(): Pool {
       connectionString: process.env.POSTGRES_URL,
       ssl: { rejectUnauthorized: false },
     });
+  } else if (hasIamCredentials && awsRegion) {
+    // Priority 2: Use IAM authentication for AWS RDS
+    const config: PoolConfig = {
+      host: pgHost,
+      port: parseInt(pgPort || '5432'),
+      database: pgDatabase,
+      user: pgUser,
+      ssl: { rejectUnauthorized: false }, // RDS requires SSL
+    };
+
+    // Create pool with password factory for IAM token generation
+    pool = new Pool({
+      ...config,
+      // Generate a fresh token for each connection
+      password: async () => {
+        return await generateIamToken();
+      },
+    } as any); // PoolConfig doesn't type password as function, but pg supports it
   } else if (hasIamCredentials) {
-    // Priority 2: Use individual PG* credentials (supports test_ prefix)
+    // Priority 3: Use standard PG credentials without IAM
     pool = new Pool({
       host: pgHost,
       port: parseInt(pgPort || '5432'),
       database: pgDatabase,
       user: pgUser,
       ssl: pgSslMode === 'require' ? { rejectUnauthorized: false } : false,
-      // IAM token will be generated per request by AWS SDK
-      // This requires @aws-sdk/rds-signer for token generation
     });
   } else {
     throw new Error('No database configuration found. Set POSTGRES_URL or PG* credentials (standard or test_ prefixed).');
