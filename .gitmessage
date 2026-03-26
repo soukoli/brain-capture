@@ -1,0 +1,21 @@
+# <type>: <subject>
+# |<----  Max 50 characters  ---->|
+
+# <body>
+# |<----  Max 72 characters per line  ---->|
+
+# --- Types ---
+# feat:     New feature
+# fix:      Bug fix
+# refactor: Code change (no feature/fix)
+# docs:     Documentation only
+# style:    Code style (formatting)
+# perf:     Performance improvement
+# test:     Adding tests
+# chore:    Maintenance (deps, config)
+
+# --- Examples ---
+# feat: add user authentication
+# fix: resolve mobile navigation bug
+# refactor: simplify button component
+# docs: update API documentation

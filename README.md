@@ -1,67 +1,93 @@
 # Brain Capture
 
-A modern Next.js application for capturing and organizing your thoughts.
+Modern Next.js starter with automated workflows for maximum productivity.
 
-## Getting Started
+> **👉 New to this template? Read [START_HERE.md](./START_HERE.md) first!**
 
-1. Install dependencies:
+## Quick Start
+
 ```bash
 npm install
-# or
-yarn install
-# or
-pnpm install
-```
-
-2. Run the development server:
-```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000
+
+## What You Get
+
+✅ **Zero Config** - Everything works out of the box
+✅ **Auto-Format** - Code formats on save and commit
+✅ **Auto-Lint** - Issues fixed automatically
+✅ **Auto-Deploy** - Push to main → Live on Vercel
+✅ **Auto-Update** - Dependencies updated weekly via PR
+✅ **Type-Safe** - TypeScript checks as you code
+
+## Stack
+
+- Next.js 15 + React 19 + TypeScript
+- Tailwind CSS + Radix UI
+- ESLint + Prettier + Husky
+
+## Daily Workflow
+
+```bash
+npm run dev              # Start coding
+git commit -m "feat: ..."  # Commit (auto-formatted!)
+git push                 # Deploy automatically
+```
+
+See [WORKFLOW.md](./WORKFLOW.md) for detailed guide.
 
 ## Scripts
 
-- `npm run dev` - Start development server with Turbopack
-- `npm run build` - Build for production
-- `npm run start` - Start production server
-- `npm run lint` - Run ESLint
-- `npm run format` - Format code with Prettier
-- `npm run format:check` - Check code formatting
-
-## Tech Stack
-
-- **Next.js 15** - React framework with App Router
-- **React 19** - UI library
-- **TypeScript** - Type safety
-- **Tailwind CSS** - Styling
-- **Radix UI** - Accessible component primitives
-- **Lucide React** - Icons
-- **ESLint** - Linting
-- **Prettier** - Code formatting
-
-## Deployment
-
-Deploy easily on [Vercel](https://vercel.com):
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
+```bash
+npm run dev          # Development server
+npm run build        # Production build
+npm run check        # Run all checks
+npm run format       # Format code
+npm run update       # Update dependencies
+```
 
 ## Project Structure
 
 ```
-brain-capture/
-├── src/
-│   ├── app/              # Next.js App Router
-│   │   ├── layout.tsx    # Root layout
-│   │   ├── page.tsx      # Home page
-│   │   └── globals.css   # Global styles
-│   ├── components/       # React components
-│   │   └── ui/           # UI components
-│   └── lib/              # Utilities
-├── public/               # Static assets
-└── ...config files
+src/
+  app/              # Pages and layouts
+  components/ui/    # Reusable components
+  lib/             # Utilities
 ```
+
+## Deploy
+
+1. Push to GitHub
+2. Import to Vercel
+3. Done! Auto-deploys on every push
+
+## Documentation
+
+- [READY.md](./READY.md) - **START HERE** - Complete setup guide
+- [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) - Command cheat sheet
+- [WORKFLOW.md](./WORKFLOW.md) - Daily development workflow
+- [SETUP.md](./SETUP.md) - Architecture and customization
+- [.github/COMMIT_CONVENTION.md](./.github/COMMIT_CONVENTION.md) - Commit format
+
+## Why This Template?
+
+**Save hours on every project:**
+- No manual formatting or linting
+- No deployment configuration
+- No dependency management hassle
+- Focus 100% on building features
+
+**Production-ready from day one:**
+- CI/CD configured
+- Git hooks working
+- Auto-deployments enabled
+- Weekly dependency updates
+
+**Modern best practices:**
+- Next.js 15 + React 19
+- TypeScript strict mode
+- Tailwind + Radix UI
+- Accessible components
+

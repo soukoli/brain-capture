@@ -11,6 +11,12 @@
 # Testing
 /coverage
 *.log
+/test-results/
+/playwright-report/
+/playwright/.cache/
+/tests/**/*.spec.ts-snapshots/**/*.png
+!/tests/**/*.spec.ts-snapshots/**/
+test-summary.md
 
 # Next.js
 /.next/

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Brain } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -11,16 +12,16 @@ export default function Home() {
             <Brain className="w-6 h-6 text-blue-600" />
             <span className="font-semibold text-xl">Brain Capture</span>
           </div>
-          <Button variant="outline">Get Started</Button>
+          <Link href="/dashboard">
+            <Button>Get Started</Button>
+          </Link>
         </div>
       </nav>
 
       <main className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <div className="space-y-4">
-            <h1 className="text-5xl font-bold tracking-tight">
-              Capture Your Ideas
-            </h1>
+            <h1 className="text-5xl font-bold tracking-tight">Capture Your Ideas</h1>
             <p className="text-xl text-slate-600 dark:text-slate-400">
               A simple and powerful way to organize your thoughts
             </p>

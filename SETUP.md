@@ -1,106 +1,272 @@
-# Brain Capture - Project Setup Complete ✓
+# Setup Guide
 
-## What's Been Created
+## Architecture Overview
 
-A production-ready Next.js 15 application with modern best practices.
+### File Structure
 
-### Tech Stack
-- **Next.js 15.3** with App Router and Turbopack
-- **React 19** with TypeScript
-- **Tailwind CSS** for styling
-- **Radix UI** components (Dialog, Dropdown, Avatar, Tabs, Slot)
-- **Lucide React** for icons
-- **ESLint** and **Prettier** for code quality
-
-### Project Structure
 ```
-brain-capture/
-├── src/
-│   ├── app/
-│   │   ├── layout.tsx       # Root layout with metadata
-│   │   ├── page.tsx         # Home page with sample UI
-│   │   └── globals.css      # Global styles with Tailwind
-│   ├── components/
-│   │   └── ui/
-│   │       ├── button.tsx   # Button component with variants
-│   │       └── card.tsx     # Card component family
-│   └── lib/
-│       └── utils.ts         # cn() utility for class merging
-├── public/                  # Static assets
-├── .vscode/                 # VS Code settings
-├── package.json
-├── tsconfig.json
-├── tailwind.config.ts
-├── next.config.ts
-├── postcss.config.mjs
-├── .prettierrc
-├── .eslintrc.json
-├── .gitignore
-├── vercel.json
-└── README.md
+src/
+  app/                    # Next.js 15 App Router
+    layout.tsx           # Root layout (metadata, fonts)
+    page.tsx             # Home page
+    globals.css          # Tailwind + custom CSS
+  components/
+    ui/                  # Radix UI components
+      button.tsx         # Button with variants
+      card.tsx           # Card components
+  lib/
+    utils.ts             # cn() helper for className merging
+
+.github/
+  workflows/
+    ci.yml               # Runs on every push/PR
+    update-deps.yml      # Weekly dependency updates
+  COMMIT_CONVENTION.md   # Commit message guide
+
+.husky/
+  pre-commit            # Runs lint-staged on commit
 ```
 
-## Getting Started
+### Key Configs
+
+**package.json** - All scripts and dependencies
+**tsconfig.json** - Strict TypeScript config
+**tailwind.config.ts** - Tailwind customization
+**.lintstagedrc.json** - Pre-commit file checks
+**.prettierrc** - Code formatting rules
+**vercel.json** - Vercel deployment config
+
+## What Each Automation Does
+
+### Pre-commit Hook (Husky + Lint-Staged)
+
+When you `git commit`:
+
+1. Prettier formats changed files
+2. ESLint fixes issues automatically
+3. Commit only proceeds if no errors
+
+### CI Workflow (GitHub Actions)
+
+On every push/PR:
+
+1. Install dependencies
+2. Type check with TypeScript
+3. Lint with ESLint
+4. Check Prettier formatting
+5. Build for production
+
+### Dependency Updates (GitHub Actions)
+
+Every Monday:
+
+1. Check for package updates
+2. Install and test updates
+3. Create PR if successful
+4. You review and merge
+
+### Vercel Deployment
+
+On push to main:
+
+1. Auto-detects Next.js
+2. Builds with `npm run build`
+3. Deploys to production
+4. Preview URLs for PRs
+
+## Design Decisions
+
+### Why These Tools?
+
+- **Husky**: Git hooks without manual setup
+- **Lint-Staged**: Only check changed files (fast!)
+- **Prettier**: No formatting arguments, ever
+- **ESLint**: Catches bugs before runtime
+- **TypeScript**: Catch errors as you code
+- **Radix UI**: Accessible, unstyled components
+- **Tailwind**: No CSS files, utility-first
+
+### Why This Workflow?
+
+1. **Automatic formatting** - Never think about it
+2. **Pre-commit checks** - Catch issues early
+3. **CI validation** - Nothing broken reaches main
+4. **Auto-updates** - Stay current effortlessly
+5. **One-command deploy** - Just push
+
+## Extending the Template
+
+### Add a New Page
+
+```typescript
+// src/app/about/page.tsx
+export default function About() {
+  return <div>About page</div>
+}
+```
+
+Automatic route: `/about`
+
+### Add a New Component
+
+```typescript
+// src/components/ui/badge.tsx
+export function Badge({ children }: { children: React.ReactNode }) {
+  return <span className="...">{children}</span>
+}
+```
+
+### Add API Route
+
+```typescript
+// src/app/api/hello/route.ts
+export async function GET() {
+  return Response.json({ message: "Hello" });
+}
+```
+
+### Add Environment Variables
 
 ```bash
-cd brain-capture
-
-# Development
-npm run dev          # Start dev server (with Turbopack)
-# Open http://localhost:3000
-
-# Production
-npm run build        # Build for production
-npm start            # Start production server
-
-# Code Quality
-npm run lint         # Run ESLint
-npm run format       # Format with Prettier
-npm run format:check # Check formatting
+# .env.local (git-ignored)
+DATABASE_URL=your-url
+NEXT_PUBLIC_API_KEY=your-key
 ```
 
-## Features
+Access with `process.env.DATABASE_URL`
 
-✅ Modern Next.js 15 with App Router
-✅ TypeScript configured with strict mode
-✅ Tailwind CSS with custom utilities
-✅ Radix UI primitives for accessibility
-✅ Reusable UI components (Button, Card)
-✅ ESLint + Prettier configured
-✅ VS Code settings for format on save
-✅ Git ignore for Next.js projects
-✅ Vercel deployment ready
-✅ Dark mode support via CSS variables
-✅ Sample home page with clean UI
+## Customization Tips
 
-## Deploy to Vercel
+### Change Tailwind Theme
 
-1. Push to GitHub:
+```typescript
+// tailwind.config.ts
+theme: {
+  extend: {
+    colors: {
+      brand: '#FF6B6B',
+    },
+  },
+}
+```
+
+### Add More Prettier Rules
+
+```json
+// .prettierrc
+{
+  "semi": false, // No semicolons
+  "singleQuote": true // Single quotes
+}
+```
+
+### Skip Pre-commit for Hotfix
+
 ```bash
-git init
-git add .
-git commit -m "Initial commit: Brain Capture app"
-git branch -M main
-git remote add origin <your-repo-url>
-git push -u origin main
+git commit -m "fix: urgent" --no-verify
 ```
 
-2. Deploy:
-- Go to [vercel.com](https://vercel.com)
-- Import your GitHub repository
-- Vercel auto-detects Next.js and deploys
-- Done! 🚀
+## Performance Optimizations
+
+### Already Included
+
+- ✅ Turbopack for fast dev builds
+- ✅ Next.js 15 compiler optimizations
+- ✅ TypeScript incremental builds
+- ✅ Lint-staged (only checks changed files)
+
+### When Needed
+
+- Add `loading.tsx` for instant loading states
+- Use `<Image>` for automatic optimization
+- Add `metadata` export for SEO
+- Use React Server Components by default
+
+## Troubleshooting
+
+### Hooks not running?
+
+```bash
+npx husky install
+chmod +x .husky/pre-commit
+```
+
+### Type errors in IDE?
+
+```bash
+npm run type-check
+```
+
+Fix or add `// @ts-ignore` if needed
+
+### Lint errors?
+
+```bash
+npm run lint
+```
+
+Most auto-fix with `eslint --fix`
+
+### Prettier conflicts with ESLint?
+
+The config already handles this - Prettier runs first
+
+### Build fails on Vercel?
+
+Check build output locally:
+
+```bash
+npm run build
+```
+
+Fix errors before pushing
+
+## Best Practices
+
+### Component Organization
+
+```
+components/
+  ui/           # Generic, reusable (Button, Card)
+  features/     # Feature-specific (LoginForm)
+  layout/       # Layout pieces (Header, Footer)
+```
+
+### Import Order
+
+1. React/Next imports
+2. External libraries
+3. Internal components
+4. Utils/helpers
+5. Types
+6. Styles
+
+### File Naming
+
+- Components: `PascalCase.tsx`
+- Utils: `camelCase.ts`
+- Constants: `UPPER_SNAKE_CASE.ts`
+
+### Commit Frequency
+
+Commit often! Hooks are fast:
+
+- After each feature/fix
+- Before switching tasks
+- At end of day
 
 ## Next Steps
 
-- Add more pages in `src/app/`
-- Create more UI components in `src/components/ui/`
-- Add API routes in `src/app/api/`
-- Customize Tailwind theme in `tailwind.config.ts`
-- Add environment variables in `.env.local`
+1. ✅ Template is ready
+2. Customize home page
+3. Add your features
+4. Push to GitHub
+5. Deploy to Vercel
+6. Start building!
 
----
+## Resources
 
-**Build Status:** ✅ Successful
-**Linting:** ✅ No errors
-**Production Ready:** ✅ Yes
+- [Next.js Docs](https://nextjs.org/docs)
+- [Radix UI](https://www.radix-ui.com)
+- [Tailwind CSS](https://tailwindcss.com)
+- [Conventional Commits](https://www.conventionalcommits.org)
