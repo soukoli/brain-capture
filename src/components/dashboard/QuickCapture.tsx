@@ -5,10 +5,15 @@ import { Button } from "@/components/ui/button";
 import { VoiceInput } from "@/components/capture/VoiceInput";
 import { Plus, Mic, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { Project } from "@/types";
+
+interface ProjectData {
+  id: string;
+  name: string;
+  color: string;
+}
 
 export interface QuickCaptureProps {
-  projects?: Project[];
+  projects?: ProjectData[];
   onCapture?: (content: string, projectId?: string) => void;
   isSubmitting?: boolean;
 }
