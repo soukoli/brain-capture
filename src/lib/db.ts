@@ -1,17 +1,36 @@
 /**
  * Database Connection
  * Supports both Vercel Postgres and AWS RDS with IAM authentication
+ * Supports standard and test_ prefixed environment variables
  */
 
 import { Pool } from 'pg';
 
-// Check if we have POSTGRES_URL (Vercel Postgres) or IAM credentials
+/**
+ * Helper to get environment variable with fallback to test_ prefix
+ */
+function getEnv(key: string): string | undefined {
+  return process.env[key] || process.env[`test_${key}`];
+}
+
+// Check if we have POSTGRES_URL (highest priority)
 const hasPostgresUrl = !!process.env.POSTGRES_URL;
-const hasIamCredentials = !!(
-  process.env.PGHOST &&
-  process.env.PGUSER &&
-  process.env.PGDATABASE
-);
+
+// Get database credentials with fallback to test_ prefix
+const pgHost = getEnv('PGHOST');
+const pgUser = getEnv('PGUSER');
+const pgDatabase = getEnv('PGDATABASE');
+const pgPort = getEnv('PGPORT');
+const pgSslMode = getEnv('PGSSLMODE');
+
+// Check if we have IAM credentials (standard or test_ prefixed)
+const hasIamCredentials = !!(pgHost && pgUser && pgDatabase);
+
+// AWS credentials for IAM authentication
+const awsAccountId = getEnv('AWS_ACCOUNT_ID');
+const awsRegion = getEnv('AWS_REGION');
+const awsResourceArn = getEnv('AWS_RESOURCE_ARN');
+const awsRoleArn = getEnv('AWS_ROLE_ARN');
 
 let pool: Pool | null = null;
 
@@ -22,24 +41,24 @@ export function getPool(): Pool {
   if (pool) return pool;
 
   if (hasPostgresUrl) {
-    // Use Vercel Postgres connection string
+    // Priority 1: Use POSTGRES_URL connection string
     pool = new Pool({
       connectionString: process.env.POSTGRES_URL,
       ssl: { rejectUnauthorized: false },
     });
   } else if (hasIamCredentials) {
-    // Use IAM authentication for AWS RDS
+    // Priority 2: Use individual PG* credentials (supports test_ prefix)
     pool = new Pool({
-      host: process.env.PGHOST,
-      port: parseInt(process.env.PGPORT || '5432'),
-      database: process.env.PGDATABASE,
-      user: process.env.PGUSER,
-      ssl: process.env.PGSSLMODE === 'require' ? { rejectUnauthorized: false } : false,
+      host: pgHost,
+      port: parseInt(pgPort || '5432'),
+      database: pgDatabase,
+      user: pgUser,
+      ssl: pgSslMode === 'require' ? { rejectUnauthorized: false } : false,
       // IAM token will be generated per request by AWS SDK
       // This requires @aws-sdk/rds-signer for token generation
     });
   } else {
-    throw new Error('No database configuration found. Set POSTGRES_URL or IAM credentials.');
+    throw new Error('No database configuration found. Set POSTGRES_URL or PG* credentials (standard or test_ prefixed).');
   }
 
   return pool;

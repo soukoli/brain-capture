@@ -67,23 +67,51 @@ vercel --prod
 
 ## Environment Variables Required
 
+The application supports environment variables with or without the `test_` prefix. The priority order is:
+1. `POSTGRES_URL` (highest priority - connection string)
+2. Standard `PG*` variables (e.g., `PGHOST`, `PGUSER`)
+3. `test_` prefixed variables (e.g., `test_PGHOST`, `test_PGUSER`)
+
 ### Production (All Environments)
+
+**Option 1: Connection String (Recommended)**
 ```bash
 POSTGRES_URL="postgresql://..."
-AWS_ACCOUNT_ID="085597560799"
-AWS_REGION="us-east-1"
-AWS_RESOURCE_ARN="arn:aws:rds:..."
-AWS_ROLE_ARN="arn:aws:iam::..."
 ```
 
-### Optional
+**Option 2: Individual PostgreSQL Variables**
 ```bash
+# Standard variables
 PGDATABASE="postgres"
 PGHOST="my-brain-capture.cluster-c4vyo86kug4b.us-east-1.rds.amazonaws.com"
 PGPORT="5432"
 PGSSLMODE="require"
 PGUSER="postgres"
+
+# OR test_ prefixed variables (automatically detected)
+test_PGDATABASE="postgres"
+test_PGHOST="my-brain-capture.cluster-c4vyo86kug4b.us-east-1.rds.amazonaws.com"
+test_PGPORT="5432"
+test_PGSSLMODE="require"
+test_PGUSER="postgres"
 ```
+
+### Optional AWS IAM Configuration
+```bash
+# Standard variables
+AWS_ACCOUNT_ID="085597560799"
+AWS_REGION="us-east-1"
+AWS_RESOURCE_ARN="arn:aws:rds:..."
+AWS_ROLE_ARN="arn:aws:iam::..."
+
+# OR test_ prefixed (automatically detected)
+test_AWS_ACCOUNT_ID="085597560799"
+test_AWS_REGION="us-east-1"
+test_AWS_RESOURCE_ARN="arn:aws:rds:..."
+test_AWS_ROLE_ARN="arn:aws:iam::..."
+```
+
+> **Note**: If you already have `test_` prefixed variables in your Vercel dashboard, the application will automatically detect and use them. No need to rename or duplicate variables.
 
 ---
 
