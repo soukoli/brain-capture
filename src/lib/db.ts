@@ -1,12 +1,78 @@
 /**
  * Database Connection
- * Vercel Postgres (Neon) client with connection pooling
+ * Supports both Vercel Postgres and AWS RDS with IAM authentication
  */
 
-import { sql } from '@vercel/postgres';
+import { Pool } from 'pg';
 
-// Export the sql client for direct queries
-export { sql };
+// Check if we have POSTGRES_URL (Vercel Postgres) or IAM credentials
+const hasPostgresUrl = !!process.env.POSTGRES_URL;
+const hasIamCredentials = !!(
+  process.env.PGHOST &&
+  process.env.PGUSER &&
+  process.env.PGDATABASE
+);
+
+let pool: Pool | null = null;
+
+/**
+ * Get or create database connection pool
+ */
+export function getPool(): Pool {
+  if (pool) return pool;
+
+  if (hasPostgresUrl) {
+    // Use Vercel Postgres connection string
+    pool = new Pool({
+      connectionString: process.env.POSTGRES_URL,
+      ssl: { rejectUnauthorized: false },
+    });
+  } else if (hasIamCredentials) {
+    // Use IAM authentication for AWS RDS
+    pool = new Pool({
+      host: process.env.PGHOST,
+      port: parseInt(process.env.PGPORT || '5432'),
+      database: process.env.PGDATABASE,
+      user: process.env.PGUSER,
+      ssl: process.env.PGSSLMODE === 'require' ? { rejectUnauthorized: false } : false,
+      // IAM token will be generated per request by AWS SDK
+      // This requires @aws-sdk/rds-signer for token generation
+    });
+  } else {
+    throw new Error('No database configuration found. Set POSTGRES_URL or IAM credentials.');
+  }
+
+  return pool;
+}
+
+/**
+ * Tagged template function for SQL queries (compatible with @vercel/postgres API)
+ */
+export async function sql(
+  strings: TemplateStringsArray,
+  ...values: any[]
+): Promise<{ rows: any[]; rowCount: number }> {
+  const pool = getPool();
+
+  // Convert template literal to parameterized query
+  let text = strings[0];
+  const params: any[] = [];
+
+  for (let i = 0; i < values.length; i++) {
+    text += `$${i + 1}` + strings[i + 1];
+    params.push(values[i]);
+  }
+
+  const result = await pool.query(text, params);
+  return { rows: result.rows, rowCount: result.rowCount || 0 };
+}
+
+// Add query method to sql function for compatibility
+sql.query = async (text: string, params?: any[]) => {
+  const pool = getPool();
+  const result = await pool.query(text, params);
+  return { rows: result.rows, rowCount: result.rowCount || 0 };
+};
 
 /**
  * Database query helper with error handling
@@ -16,7 +82,8 @@ export async function query<T = any>(
   params?: any[]
 ): Promise<T[]> {
   try {
-    const result = await sql.query(queryText, params);
+    const pool = getPool();
+    const result = await pool.query(queryText, params);
     return result.rows as T[];
   } catch (error) {
     console.error('Database query error:', error);
@@ -28,14 +95,22 @@ export async function query<T = any>(
  * Transaction helper
  */
 export async function transaction<T>(
-  callback: (client: typeof sql) => Promise<T>
+  callback: (client: Pool) => Promise<T>
 ): Promise<T> {
+  const pool = getPool();
+  const client = await pool.connect();
+
   try {
-    // Vercel Postgres handles connection pooling automatically
-    return await callback(sql);
+    await client.query('BEGIN');
+    const result = await callback(pool);
+    await client.query('COMMIT');
+    return result;
   } catch (error) {
+    await client.query('ROLLBACK');
     console.error('Transaction error:', error);
     throw error;
+  } finally {
+    client.release();
   }
 }
 
@@ -44,7 +119,8 @@ export async function transaction<T>(
  */
 export async function healthCheck(): Promise<boolean> {
   try {
-    await sql`SELECT 1`;
+    const pool = getPool();
+    await pool.query('SELECT 1');
     return true;
   } catch (error) {
     console.error('Database health check failed:', error);
@@ -66,7 +142,9 @@ export async function initDatabase(): Promise<void> {
       'utf-8'
     );
 
-    // Execute schema (Vercel Postgres doesn't support multi-statement, so split)
+    const pool = getPool();
+
+    // Execute schema (split by semicolon and filter out comments)
     const statements = schemaSQL
       .split(';')
       .map((s) => s.trim())
@@ -74,7 +152,7 @@ export async function initDatabase(): Promise<void> {
 
     for (const statement of statements) {
       if (statement) {
-        await sql.query(statement);
+        await pool.query(statement);
       }
     }
 

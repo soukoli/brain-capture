@@ -35,16 +35,17 @@ export async function POST() {
  */
 export async function GET() {
   try {
-    const { sql } = await import("@/lib/db");
+    const { getPool } = await import("@/lib/db");
+    const pool = getPool();
 
     // Check if tables exist
-    const result = await sql`
+    const result = await pool.query(`
       SELECT table_name
       FROM information_schema.tables
       WHERE table_schema = 'public'
       AND table_name IN ('users', 'projects', 'ideas', 'tags', 'idea_tags')
       ORDER BY table_name;
-    `;
+    `);
 
     const tables = result.rows.map((row: any) => row.table_name);
     const allTablesExist = tables.length === 5;
