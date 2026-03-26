@@ -7,9 +7,9 @@ export const metadata: Metadata = {
 };
 
 interface DashboardPageProps {
-  searchParams: {
+  searchParams: Promise<{
     user_id?: string;
-  };
+  }>;
 }
 
 // Define interfaces matching the API response
@@ -76,7 +76,8 @@ async function fetchDashboardData(userId: string): Promise<DashboardData> {
 
 export default async function DashboardPage({ searchParams }: DashboardPageProps) {
   // Get user_id from search params or use default for development
-  const userId = searchParams.user_id || 'dev-user';
+  const params = await searchParams;
+  const userId = params.user_id || 'dev-user';
 
   try {
     const data = await fetchDashboardData(userId);
