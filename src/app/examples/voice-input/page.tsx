@@ -108,10 +108,10 @@ export default function VoiceInputExample() {
         <CardContent>
           <ol className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
             <li>1. Tap the microphone button to start recording</li>
-            <li>2. Speak clearly into your device's microphone</li>
+            <li>2. Speak clearly into your device&apos;s microphone</li>
             <li>3. Watch your speech appear as text in real-time</li>
             <li>4. Tap the microphone again to stop recording</li>
-            <li>5. Click "Use This Text" to save your transcript</li>
+            <li>5. Click &quot;Use This Text&quot; to save your transcript</li>
             <li>6. Change the language using the language selector</li>
           </ol>
         </CardContent>

@@ -104,7 +104,7 @@ export function VoiceInput({
               Voice Input Not Supported
             </h3>
             <p className="text-sm text-slate-500 dark:text-slate-400">
-              Your browser doesn't support voice input. Please try using Chrome, Edge, or Safari on
+              Your browser doesn&apos;t support voice input. Please try using Chrome, Edge, or Safari on
               a desktop or mobile device.
             </p>
           </div>
