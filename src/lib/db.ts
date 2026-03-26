@@ -8,9 +8,11 @@ import { Pool } from 'pg';
 
 /**
  * Helper to get environment variable with fallback to test_ prefix
+ * Trims whitespace to handle copy-paste issues
  */
 function getEnv(key: string): string | undefined {
-  return process.env[key] || process.env[`test_${key}`];
+  const value = process.env[key] || process.env[`test_${key}`];
+  return value?.trim();
 }
 
 // Check if we have POSTGRES_URL (highest priority)
