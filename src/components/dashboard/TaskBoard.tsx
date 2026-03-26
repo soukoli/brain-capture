@@ -14,8 +14,8 @@ export interface Task {
   createdAt: string;
   startedAt?: string;
   completedAt?: string;
-  timeInProgress?: number;
-  shouldWarn?: boolean;
+  timeInProgress: number;
+  shouldWarn: boolean;
 }
 
 export interface TaskBoardProps {
