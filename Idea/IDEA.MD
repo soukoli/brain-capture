@@ -1,62 +1,123 @@
-Brain Capture APP
+# Brain Capture
 
-PWA (Progressive Web App)
-rychla a jednoducha aplikace pro zachycení myšlenek a plánování dne. Cílem je mít jedno místo, kam můžeš rychle zapsat své nápady a úkoly, které pak budou zpracovány AI agentem.
+A simple personal task system focused on capturing thoughts and turning them into tasks organized by projects.
 
-- zadam TASK ten se rozdeli do projektu a ulozi do DB
-- rychle a prehledene pomoci 
+**The goal is clarity, speed, and visual progress, not complex productivity features.**
 
+This tool is designed primarily for one user and optimized for **mobile-first** usage, so tasks can be captured anywhere.
 
-1. Zachycení myšlenky
+---
 
+## Core Idea
 
+Brain Capture is a minimal system to manage thoughts and tasks.
 
-2. Jedno tlačítko → zpracování
+The workflow is simple:
 
-Ty (1× denně):
+1. Create projects
+2. Capture tasks/notes
+3. Organize tasks under projects
+4. Select tasks to work on today
+5. Complete them and see progress
 
-otevřeš jednoduchou web appku (tvoje)
+**No reminders, no automation, no complexity.**
 
-klikneš: “Process notes”
+Just **capture → organize → execute → finish**.
 
+---
 
-Agent 1: Parser
-You take raw notes and convert them into structured tasks and projects.
+## Key Concepts
 
-Rules:
-- split ideas into tasks
-- group by project
-- keep tasks small (max 1 hour)
+### Projects
 
+Projects are the main way to organize work.
 
-Agent 2: Daily planner
-Pick 3 most important tasks for today.
-Add 1 learning task.
-Keep it realistic.
+Each project has:
 
+- **name**
+- **color**
+- **editable title**
+- **list of tasks**
 
-2. Architektura
+Projects should be visually recognizable by color and easy to reorganize.
 
-Next.js app (web + mobile)
-↓
-API (Node.js)
-↓
-SQLite / Postgres
-↓
-GitHub sync (markdown backup)
-↓
-OpenAI (AI agent)
+### Tasks
 
-8. Tech stack (pro tebe ideální)
+Tasks represent thoughts, ideas, or work items.
 
-Next.js (App Router)
+Each task has:
 
-Tailwind (rychlý UI)
+- **name**
+- **optional description**
+- **project assignment**
+- **completion state**
 
-Prisma (DB)
+Tasks can be moved between projects easily to allow flexible organization.
 
-SQLite (start)
+### Today
 
-OpenAI API
+Tasks from different projects can be scheduled for **Today**.
 
-GitHub API
+This creates a simple daily execution list.
+
+**Workflow:**
+
+1. User selects a task
+2. Clicks **Play**
+3. Task appears in **Today**
+
+When completed, the task is marked as done.
+
+This creates a visible sense of progress.
+
+---
+
+## Design Principles
+
+The application must be:
+
+- ⚡ Fast to capture thoughts
+- 🎯 Very simple to understand
+- 🔄 Easy to reorganize tasks
+- 🎨 Visually clear with project colors
+- 📱 Mobile friendly
+
+**No unnecessary complexity.**
+
+---
+
+## Tech Stack
+
+### Frontend
+
+- **Next.js 15**
+- **React 19**
+- **TypeScript**
+- **Tailwind CSS**
+- **Radix UI**
+
+### Code Quality
+
+- **ESLint**
+- **Prettier**
+- **Husky**
+
+### Backend / Data
+
+- **Drizzle ORM**
+- **PostgreSQL** (local Docker for development)
+
+---
+
+## First Version Scope
+
+The first version should **only** include:
+
+- ✅ Project creation
+- ✅ Task creation
+- ✅ Assign tasks to projects
+- ✅ Move tasks between projects
+- ✅ Schedule tasks for Today
+- ✅ Mark tasks as done
+
+_Everything else can come later._
