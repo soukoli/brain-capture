@@ -1,12 +1,16 @@
 #!/bin/bash
 # Generate PostgreSQL connection string with IAM authentication token
+#
+# IMPORTANT: This is an example script for AWS RDS IAM authentication.
+# Update the configuration below with your actual RDS instance details.
+# This script is useful for Vercel deployments with AWS RDS.
 
-# Configuration
+# Configuration - UPDATE THESE WITH YOUR VALUES
 AWS_REGION="us-east-1"
-PGHOST="my-brain-capture.cluster-c4vyo86kug4b.us-east-1.rds.amazonaws.com"
+PGHOST="my-brain-capture.cluster-c4vyo86kug4b.us-east-1.rds.amazonaws.com"  # Replace with your RDS endpoint
 PGPORT="5432"
-PGUSER="postgres"
-PGDATABASE="postgres"
+PGUSER="postgres"  # Replace with your DB user
+PGDATABASE="postgres"  # Replace with your database name
 
 # Generate IAM auth token (valid for 15 minutes)
 echo "Generating IAM authentication token..."

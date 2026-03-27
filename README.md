@@ -1,93 +1,166 @@
 # Brain Capture
 
-Modern Next.js starter with automated workflows for maximum productivity.
+A minimal personal task management system focused on clarity, speed, and visual progress.
 
-> **👉 New to this template? Read [START_HERE.md](./START_HERE.md) first!**
+**Mobile-first design** for capturing thoughts anywhere.
+
+## Philosophy
+
+No reminders. No automation. No complexity.
+
+Just **capture → organize → execute → finish**.
+
+## Core Features (MVP)
+
+- Create projects with colors
+- Capture tasks quickly
+- Assign tasks to projects
+- Move tasks between projects
+- Schedule tasks for "Today"
+- Mark tasks as done
+
+## Tech Stack
+
+- **Frontend**: Next.js 15 + React 19 + TypeScript + Tailwind CSS + Radix UI
+- **Backend**: Next.js API routes
+- **Database**: PostgreSQL (Vercel Postgres or AWS RDS)
+- **Testing**: Playwright
+- **Code Quality**: ESLint + Prettier + Husky
 
 ## Quick Start
 
+### Prerequisites
+
+- Node.js 18+
+- Docker Desktop (for local database)
+
+### Installation
+
 ```bash
+# Install dependencies
 npm install
+
+# Start PostgreSQL with Docker
+npm run docker:up
+
+# Set up environment variables
+cp .env.example .env.local
+
+# Push database schema
+npm run db:push
+
+# Seed with sample data (optional)
+npm run db:seed
+
+# Start development server
 npm run dev
 ```
 
-Open http://localhost:3000
+Open [http://localhost:3000](http://localhost:3000)
 
-## What You Get
+For detailed setup instructions, see [DEVELOPMENT.md](./DEVELOPMENT.md)
 
-✅ **Zero Config** - Everything works out of the box
-✅ **Auto-Format** - Code formats on save and commit
-✅ **Auto-Lint** - Issues fixed automatically
-✅ **Auto-Deploy** - Push to main → Live on Vercel
-✅ **Auto-Update** - Dependencies updated weekly via PR
-✅ **Type-Safe** - TypeScript checks as you code
+## Environment Variables
 
-## Stack
+Create a `.env.local` file:
 
-- Next.js 15 + React 19 + TypeScript
-- Tailwind CSS + Radix UI
-- ESLint + Prettier + Husky
+**Local Development (Docker)**
 
-## Daily Workflow
-
-```bash
-npm run dev              # Start coding
-git commit -m "feat: ..."  # Commit (auto-formatted!)
-git push                 # Deploy automatically
+```env
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/brain_capture_dev
+NODE_ENV=development
 ```
 
-See [WORKFLOW.md](./WORKFLOW.md) for detailed guide.
+**Production Options:**
 
-## Scripts
+See [DEVELOPMENT.md](./DEVELOPMENT.md) for Vercel Postgres and AWS RDS configurations.
+
+## Development Commands
 
 ```bash
-npm run dev          # Development server
-npm run build        # Production build
-npm run check        # Run all checks
-npm run format       # Format code
-npm run update       # Update dependencies
+# Development
+npm run dev              # Start dev server
+npm run build            # Production build
+
+# Code Quality
+npm run lint             # Lint code
+npm run format           # Format code
+npm run type-check       # TypeScript check
+npm run check            # Run all checks
+
+# Database (Drizzle ORM)
+npm run db:push          # Push schema to database
+npm run db:generate      # Generate migrations
+npm run db:studio        # Open Drizzle Studio
+npm run db:seed          # Seed sample data
+npm run db:reset         # Full database reset
+
+# Docker
+npm run docker:up        # Start PostgreSQL
+npm run docker:down      # Stop containers
+npm run docker:reset     # Reset database
+
+# Testing
+npm run test:e2e         # Run E2E tests
+npm run test:e2e:ui      # Interactive test mode
 ```
+
+See [DEVELOPMENT.md](./DEVELOPMENT.md) for complete documentation.
 
 ## Project Structure
 
 ```
 src/
-  app/              # Pages and layouts
-  components/ui/    # Reusable components
-  lib/             # Utilities
+├── app/                 # Next.js pages and API routes
+│   ├── api/            # API endpoints
+│   ├── capture/        # Capture page
+│   └── dashboard/      # Dashboard page
+├── components/         # React components
+│   ├── capture/        # Capture-related components
+│   ├── dashboard/      # Dashboard components
+│   └── ui/             # Reusable UI components
+└── lib/                # Utilities and database
+    ├── repositories/   # Data access layer
+    ├── db.ts          # Database connection
+    └── types.ts       # Type definitions
 ```
-
-## Deploy
-
-1. Push to GitHub
-2. Import to Vercel
-3. Done! Auto-deploys on every push
 
 ## Documentation
 
-- [READY.md](./READY.md) - **START HERE** - Complete setup guide
-- [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) - Command cheat sheet
-- [WORKFLOW.md](./WORKFLOW.md) - Daily development workflow
-- [SETUP.md](./SETUP.md) - Architecture and customization
-- [.github/COMMIT_CONVENTION.md](./.github/COMMIT_CONVENTION.md) - Commit format
+- [DEVELOPMENT.md](./DEVELOPMENT.md) - Complete development setup with Drizzle ORM and Docker
+- [ARCHITECTURE.md](./ARCHITECTURE.md) - Technical architecture and database design
+- [CLAUDE.md](./CLAUDE.md) - AI assistant guidance for development
+- [Idea/IDEA.MD](./Idea/IDEA.MD) - Original concept and vision
 
-## Why This Template?
+## Design Principles
 
-**Save hours on every project:**
-- No manual formatting or linting
-- No deployment configuration
-- No dependency management hassle
-- Focus 100% on building features
+- ⚡ **Fast to capture** - Minimal friction
+- 🎯 **Simple to understand** - No complex workflows
+- 🔄 **Easy to reorganize** - Flexible task management
+- 🎨 **Visually clear** - Project colors for quick recognition
+- 📱 **Mobile friendly** - Touch-first design
 
-**Production-ready from day one:**
-- CI/CD configured
-- Git hooks working
-- Auto-deployments enabled
-- Weekly dependency updates
+## Deployment
 
-**Modern best practices:**
-- Next.js 15 + React 19
-- TypeScript strict mode
-- Tailwind + Radix UI
-- Accessible components
+### Vercel (Recommended)
 
+1. Push to GitHub
+2. Import to Vercel
+3. Add environment variables
+4. Deploy
+
+Auto-deploys on every push to `main`.
+
+### Database Setup
+
+**Development**: Use local PostgreSQL or Vercel Postgres free tier
+
+**Production**: Use Vercel Postgres or AWS RDS with IAM authentication
+
+## Contributing
+
+This is a personal project, but feel free to fork and adapt for your needs.
+
+## License
+
+MIT
