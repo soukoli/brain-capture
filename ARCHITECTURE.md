@@ -8,71 +8,41 @@ Brain Capture is a Next.js 15 application with a PostgreSQL database, designed f
 
 ## Architecture Layers
 
-### 1. Frontend (React + Next.js)
+### Current State
 
-```
-┌─────────────────────────────────────┐
-│         Next.js App Router          │
-├─────────────────────────────────────┤
-│  Pages:                             │
-│  - /                 (Home)         │
-│  - /capture          (Task capture) │
-│  - /dashboard        (Overview)     │
-└─────────────────────────────────────┘
-         │
-         ▼
-┌─────────────────────────────────────┐
-│      React Components               │
-├─────────────────────────────────────┤
-│  - CaptureForm                      │
-│  - ProjectSelector                  │
-│  - TaskCard                         │
-│  - ProjectCard                      │
-└─────────────────────────────────────┘
-         │
-         ▼
-┌─────────────────────────────────────┐
-│      UI Components (Radix)          │
-│  - Button, Card, Select, Tabs       │
-└─────────────────────────────────────┘
-```
+The application has been cleaned up from the old implementation. The following remain:
 
-### 2. Backend (API Routes)
+**Frontend:**
 
-```
-┌─────────────────────────────────────┐
-│         API Routes                  │
-├─────────────────────────────────────┤
-│  GET    /api/projects               │
-│  POST   /api/projects               │
-│  PATCH  /api/projects/:id           │
-│  DELETE /api/projects/:id           │
-│                                     │
-│  GET    /api/ideas                  │
-│  POST   /api/ideas                  │
-│  PATCH  /api/ideas/:id              │
-│  DELETE /api/ideas/:id              │
-│                                     │
-│  GET    /api/health                 │
-└─────────────────────────────────────┘
-         │
-         ▼
-┌─────────────────────────────────────┐
-│      Repository Layer               │
-├─────────────────────────────────────┤
-│  - projects.ts                      │
-│  - ideas.ts                         │
-│  - tasks.ts                         │
-└─────────────────────────────────────┘
-         │
-         ▼
-┌─────────────────────────────────────┐
-│      Database Layer (db.ts)         │
-│  - Connection pooling               │
-│  - SQL tagged templates             │
-│  - Transaction support              │
-└─────────────────────────────────────┘
-```
+- Next.js 15 App Router structure
+- Basic home page (landing page)
+- UI components: Button, Card, Select, Tabs (Radix UI)
+- Navbar component (layout)
+
+**Backend:**
+
+- API routes: `/api/health`, `/api/check-env`
+- Database layer with Drizzle ORM
+- Database schema defined in `src/lib/db/schema.ts`
+
+**To be implemented for MVP:**
+
+- Project management pages
+- Task capture and organization
+- Today's focus view
+- Mobile-first UI components
+
+### Previous Architecture (Removed)
+
+The following have been removed as they were part of an over-complex implementation:
+
+- `/capture` page with voice input
+- `/dashboard` page with complex task board
+- `/examples/voice-input` demo page
+- Voice recognition hooks and components
+- Old repository layer using `sql` template tags
+- Complex API routes for projects/ideas/dashboard
+- E2E tests for old implementation
 
 ### 3. Database (PostgreSQL)
 
@@ -272,98 +242,26 @@ interface Project {
 
 ### Frontend Types (`src/lib/types.ts`)
 
-Simplified for UI:
-
-```typescript
-interface Capture {
-  id: string;
-  content: string;
-  projectId: string;
-  createdAt: Date;
-  updatedAt: Date;
-  type: "text" | "voice";
-}
-
-interface Project {
-  id: string;
-  name: string;
-  color: string;
-  description?: string;
-  createdAt: Date;
-}
-```
-
-**Important**: When crossing boundaries (API → UI), transform `snake_case` DB fields to `camelCase` frontend fields.
+To be defined based on MVP requirements. Will follow camelCase convention for consistency with JavaScript/TypeScript naming standards.
 
 ## Repository Pattern
 
-Data access is abstracted through repository functions:
+To be implemented using Drizzle ORM for the MVP. Will provide a clean data access layer for:
 
-### Projects Repository
-
-```typescript
-// Create
-createProject(data: CreateProjectInput): Promise<Project>
-
-// Read
-getProjects(query: GetProjectsQuery): Promise<ProjectWithStats[]>
-getProjectById(id: string): Promise<ProjectWithStats>
-
-// Update
-updateProject(id: string, data: UpdateProjectInput): Promise<Project>
-
-// Delete
-deleteProject(id: string): Promise<void>
-archiveProject(id: string): Promise<Project>
-
-// Stats
-getProjectStats(id: string): Promise<ProjectStats>
-getUserProjectStats(userId: string): Promise<UserProjectStats>
-```
-
-### Ideas Repository
-
-Similar CRUD operations with additional status management.
+- Project CRUD operations
+- Task/Idea CRUD operations
+- Query methods for dashboard views
 
 ## API Design
 
-All API routes follow REST conventions:
+Currently only diagnostic API routes exist:
 
-### Request Format
+- `GET /api/health` - Database health check
+- `GET /api/check-env` - Environment variable diagnostic
 
-```typescript
-// POST /api/projects
-{
-  "name": "Project Name",
-  "color": "#3B82F6",
-  "description": "Optional description",
-  "user_id": "user-123"
-}
-```
+**To be implemented for MVP:**
 
-### Response Format
-
-```typescript
-// Success
-{
-  "success": true,
-  "data": { /* resource */ }
-}
-
-// Error
-{
-  "success": false,
-  "error": "Error message"
-}
-```
-
-### Status Codes
-
-- `200` - Success
-- `201` - Created
-- `400` - Bad Request (validation error)
-- `404` - Not Found
-- `500` - Server Error
+All API routes will follow REST conventions with Drizzle ORM for data access.
 
 ## Frontend State Management
 
@@ -437,25 +335,12 @@ Zod schemas validate all user input before database operations.
 
 ## Testing Strategy
 
-### E2E Tests (Playwright)
+To be implemented for MVP. Will use Playwright for E2E tests covering:
 
-Current test coverage:
-
-- `tests/e2e/capture-flow.spec.ts` - Task capture workflows
-- `tests/e2e/projects.spec.ts` - Project management
-- `tests/e2e/mobile.spec.ts` - Mobile-specific interactions
-
-Run tests:
-
-```bash
-npm run test:e2e
-npm run test:e2e:mobile
-```
-
-### Test Data
-
-- Fixtures in `tests/fixtures/test-data.ts`
-- Test helpers in `tests/utils/test-helpers.ts`
+- Project creation and management
+- Task capture and organization
+- Mobile-specific interactions
+- Keyboard shortcuts
 
 ## Deployment
 

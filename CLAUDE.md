@@ -6,7 +6,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Brain Capture is a minimal personal task management system focused on **mobile-first** usage. The core philosophy is clarity, speed, and visual progress over complex productivity features.
 
-**Important**: The current codebase is a skeleton implementation with existing database schema and API structure. Before implementing new features, the existing structure should be reviewed and cleared/refactored to align with the simplified vision described in `Idea/IDEA.MD`.
+**Current Status**: The codebase has been cleaned up from an over-complex initial implementation. We now have a clean slate with:
+
+- Database schema (Drizzle ORM + PostgreSQL) in `src/lib/db/schema.ts`
+- Basic Next.js 15 structure with home page
+- UI component library (Radix UI components)
+- Health and diagnostic API endpoints
+- Docker Compose setup for local development
+
+**Ready to implement**: The simplified MVP as described in `Idea/IDEA.MD`.
 
 ### Core Workflow
 
@@ -40,7 +48,7 @@ All env vars support `test_` prefix fallback for local testing.
 
 ### Database Schema
 
-Located in `scripts/init-db.sql`. Core tables:
+Database schema is defined using Drizzle ORM in `src/lib/db/schema.ts`. Core tables:
 
 - **projects**: User projects with name, color, status, description
 - **ideas**: Tasks/notes with content, status (inbox/in-progress/completed/archived/deleted), priority, capture_method, AI metadata
@@ -51,21 +59,25 @@ Key constraint: Ideas reference projects with `ON DELETE SET NULL` (deleting a p
 
 ### Key Files
 
-- `src/lib/db.ts` - Database connection pool management and query helpers (supports IAM auth)
-- `src/lib/repositories/` - Data access layer for projects, ideas, tasks
-- `src/lib/types.ts` - Frontend types (simplified Project/Capture models)
-- `src/lib/validations.ts` - Input validation schemas
-- `src/app/api/` - API route handlers
-- `scripts/init-db.sql` - Database schema definition
+- `src/lib/db/` - Drizzle ORM database connection and schema
+  - `schema.ts` - Database schema definitions
+  - `index.ts` - Connection pool and DB instance
+- `src/lib/types.ts` - Frontend types (to be defined for MVP)
+- `src/lib/validations.ts` - Input validation schemas (to be implemented)
+- `src/app/api/` - API route handlers (currently only health and check-env)
+- `src/components/ui/` - Radix UI components (Button, Card, Select, Tabs)
+- `src/components/layout/` - Layout components (Navbar)
 
-### Type System Duality
+### Database Types
 
-**Important**: There are two parallel type systems:
+Drizzle ORM provides type-safe database access. Types are exported from `src/lib/db/schema.ts`:
 
-1. **Database types** (`src/lib/db.ts`): `Idea`, `Project` - matches PostgreSQL schema exactly
-2. **Frontend types** (`src/lib/types.ts`): `Capture`, `Project` - simplified for UI
+- `Project`, `NewProject` - Project table types
+- `Idea`, `NewIdea` - Ideas/tasks table types
+- `Tag`, `NewTag` - Tag table types
+- `IdeaTag`, `NewIdeaTag` - Junction table types
 
-When working across boundaries, be aware of field name differences (e.g., `project_id` vs `projectId`, `created_at` vs `createdAt`).
+All database fields use camelCase in Drizzle schema (e.g., `projectId`, `createdAt`).
 
 ## Development Commands
 
@@ -98,38 +110,7 @@ npm run check            # Run format + lint + type-check
 
 ### Testing
 
-```bash
-# Run all tests
-npm run test:e2e
-
-# Development modes
-npm run test:e2e:ui      # Interactive UI mode
-npm run test:e2e:debug   # Debug mode
-npm run test:e2e:headed  # Headed browser mode
-
-# Device-specific
-npm run test:e2e:mobile  # Mobile browsers only
-npm run test:e2e:desktop # Desktop browsers only
-
-# Browser-specific
-npm run test:e2e:chromium
-npm run test:e2e:firefox
-npm run test:e2e:webkit
-
-# Feature-specific
-npm run test:capture     # Capture flow tests
-npm run test:voice       # Voice input tests
-npm run test:keyboard    # Keyboard shortcuts
-npm run test:projects    # Project management
-npm run test:a11y        # Accessibility tests
-npm run test:perf        # Performance tests
-npm run test:visual      # Visual regression tests
-
-# Utilities
-npm run test:update-snapshots  # Update visual snapshots
-npm run test:report            # View test report
-npm run test:install           # Install Playwright browsers
-```
+E2E tests will be implemented with Playwright once MVP features are built. The test commands are defined in `package.json` but no tests exist yet.
 
 ## First Version Scope
 
@@ -177,29 +158,29 @@ git push
 
 ## Environment Variables
 
-Required for database connection (choose one method):
+For local development with Docker:
 
-**Method 1: Connection String**
+```env
+DATABASE_URL=postgresql://postgres:postgres@localhost:5433/brain_capture_dev
+NODE_ENV=development
+```
+
+For production (choose one method):
+
+**Method 1: Connection String (Vercel Postgres)**
 
 ```
+DATABASE_URL=postgresql://...
+# or
 POSTGRES_URL=postgresql://...
 ```
 
-**Method 2: IAM Authentication (AWS RDS + Vercel)**
-
-```
-PGHOST=your-rds-instance.region.rds.amazonaws.com
-PGUSER=your-db-user
-PGDATABASE=brain_capture
-AWS_REGION=us-east-1
-AWS_ROLE_ARN=arn:aws:iam::account:role/role-name
-VERCEL_OIDC_TOKEN=<auto-provided-by-vercel>
-```
+**Method 2: IAM Authentication (AWS RDS + Vercel)** - Not currently supported, requires implementation
 
 **Method 3: Standard PG Credentials**
 
 ```
-PGHOST=localhost
+PGHOST=your-host
 PGUSER=postgres
 PGDATABASE=brain_capture
 PGPORT=5432
@@ -213,8 +194,29 @@ PGPORT=5432
 
 ## Important Notes
 
-- The existing codebase has more features than the MVP scope - simplify before adding new features
-- Database schema includes advanced features (AI metadata, tags, time tracking) that are **out of scope** for v1
+- The codebase has been cleaned up and is ready for MVP implementation
+- Database schema includes advanced features (AI metadata, tags, time tracking) that are **out of scope** for v1 - these can be ignored during initial implementation
 - Focus on the core workflow: capture → organize → execute → finish
 - Mobile-first design is critical - test on actual devices or mobile viewport
 - Project colors are a key visual element - make them prominent in the UI
+- Use Drizzle ORM for all database operations (no raw SQL unless absolutely necessary)
+
+## What Was Removed
+
+The following were removed from the over-complex initial implementation:
+
+- `/capture` page with voice input functionality
+- `/dashboard` page with complex task board
+- `/examples/voice-input` demo page
+- Voice recognition hooks and components
+- Old repository layer using `sql` template tags
+- Complex API routes for projects/ideas/dashboard (these will be reimplemented simply for MVP)
+- E2E tests for old implementation (will be rewritten for MVP)
+
+## Next Steps for MVP
+
+1. Implement basic project CRUD pages
+2. Implement task capture and list views
+3. Implement "Today" view for focused task selection
+4. Add mobile-optimized UI components
+5. Write E2E tests for core workflows

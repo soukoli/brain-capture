@@ -1,6 +1,4 @@
-import Link from "next/link";
 import { Brain } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 export default function Home() {
@@ -12,18 +10,15 @@ export default function Home() {
             <Brain className="w-6 h-6 text-blue-600" />
             <span className="font-semibold text-xl">Brain Capture</span>
           </div>
-          <Link href="/dashboard">
-            <Button>Get Started</Button>
-          </Link>
         </div>
       </nav>
 
       <main className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <div className="space-y-4">
-            <h1 className="text-5xl font-bold tracking-tight">Capture Your Ideas</h1>
+            <h1 className="text-5xl font-bold tracking-tight">Capture. Organize. Execute.</h1>
             <p className="text-xl text-slate-600 dark:text-slate-400">
-              A simple and powerful way to organize your thoughts
+              A minimal task management system focused on mobile-first simplicity
             </p>
           </div>
 
@@ -34,7 +29,7 @@ export default function Home() {
               </div>
               <h3 className="font-semibold text-lg">Quick Capture</h3>
               <p className="text-sm text-slate-600 dark:text-slate-400">
-                Instantly save your thoughts before they slip away
+                Capture tasks instantly with minimal friction
               </p>
             </Card>
 
@@ -42,9 +37,9 @@ export default function Home() {
               <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center">
                 <Brain className="w-6 h-6 text-purple-600" />
               </div>
-              <h3 className="font-semibold text-lg">Smart Organization</h3>
+              <h3 className="font-semibold text-lg">Color-Coded Projects</h3>
               <p className="text-sm text-slate-600 dark:text-slate-400">
-                Automatically categorize and connect related ideas
+                Organize with visual clarity using project colors
               </p>
             </Card>
 
@@ -52,11 +47,17 @@ export default function Home() {
               <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center">
                 <Brain className="w-6 h-6 text-green-600" />
               </div>
-              <h3 className="font-semibold text-lg">Powerful Search</h3>
+              <h3 className="font-semibold text-lg">Today&apos;s Focus</h3>
               <p className="text-sm text-slate-600 dark:text-slate-400">
-                Find any thought instantly with intelligent search
+                Select and complete today&apos;s most important tasks
               </p>
             </Card>
+          </div>
+
+          <div className="mt-12 p-8 bg-slate-100 dark:bg-slate-900 rounded-lg">
+            <p className="text-slate-600 dark:text-slate-400">
+              Coming soon: A clean, mobile-first interface for managing your tasks
+            </p>
           </div>
         </div>
       </main>
